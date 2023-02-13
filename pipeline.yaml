@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: Pipeline for the "new-product" project to AWS
+Description: Pipeline for the "new-product" project on AWS
 
 Parameters:
   GitHubOwner:
@@ -74,7 +74,7 @@ Resources:
       ServiceRole: !GetAtt CodeBuildServiceRole.Arn
       Source:
         Type: GITHUB
-        Location: 'https://github.com/laverdoc/new-product.git'
+        Location: !Sub 'https://github.com/${GitHubOwner}/${GitHubRepository}.git'
         BuildSpec: buildspec.yaml
         Auth:
           Type: OAUTH
