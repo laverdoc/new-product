@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: Pipeline for the "new-product" project on AWS
+Description: Pipeline for the "new-product" project to AWS
 
 Parameters:
   GitHubOwner:
