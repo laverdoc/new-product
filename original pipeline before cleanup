@@ -1,21 +1,4 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: Pipeline for the "new-product" project on AWS
-
-Parameters:
-  GitHubOwner:
-    Type: String
-    AllowedPattern: "[A-Za-z0-9-]+"
-
-  GitHubRepository:
-    Type: String
-    AllowedPattern: "[A-Za-z0-9-]+"
-    Default: new-product #just repo name, not the full URL
-    
-  GitHubBranch:
-    Type: String
-    AllowedPattern: "[A-Za-z0-9-]+"
-    Default: master
-
 Resources:
   CodeBuildServiceRole:
     Type: 'AWS::IAM::Role'
@@ -74,7 +57,7 @@ Resources:
       ServiceRole: !GetAtt CodeBuildServiceRole.Arn
       Source:
         Type: GITHUB
-        Location: !Sub 'https://github.com/${GitHubOwner}/${GitHubRepository}.git'
+        Location: 'https://github.com/laverdoc/new-product.git'
         BuildSpec: buildspec.yaml
         Auth:
           Type: OAUTH
@@ -87,7 +70,7 @@ Resources:
           - - Type: EVENT
               Pattern: 'PULL_REQUEST_CREATED, PULL_REQUEST_UPDATED, PULL_REQUEST_REOPENED'
             - Type: BASE_REF
-              Pattern: !Sub '^refs/heads/${GitHubBranch}$'
+              Pattern: !Sub ⌃refs/heads/master$
       Environment:
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_SMALL
