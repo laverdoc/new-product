@@ -7,5 +7,6 @@ phases:
       - echo Build started on `date`
 
 artifacts:
-   files:
-     - '**/*'
+    files:
+      - 'public/*'
+    discard-paths: yes
