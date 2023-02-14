@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: Pipeline for the "new-product" project on AWS
+Description: Pipeline for the "new-product" project to AWS
 
 Parameters:
   GitHubOwner:
@@ -74,7 +74,7 @@ Resources:
       ServiceRole: !GetAtt CodeBuildServiceRole.Arn
       Source:
         Type: GITHUB
-        Location: !Sub 'https://github.com/${GitHubOwner}/${GitHubRepository}.git'
+        Location: 'https://github.com/laverdoc/new-product.git'
         BuildSpec: buildspec.yaml
         Auth:
           Type: OAUTH
@@ -92,60 +92,6 @@ Resources:
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_SMALL
         Image: 'aws/codebuild/standard:4.0'
-        
-  CodeBuildProjectDeployDev:
-    Type: 'AWS::CodeBuild::Project'
-    Properties:
-      Name: !Sub '${AWS::StackName}-deploy-dev'
-      ServiceRole: !GetAtt CodeBuildServiceRole.Arn
-      Source:
-        Type: CODEPIPELINE
-        BuildSpec: deployspec.yaml
-      Artifacts:
-        Type: CODEPIPELINE
-      Environment:
-        Type: LINUX_CONTAINER
-        ComputeType: BUILD_GENERAL1_SMALL
-        Image: 'aws/codebuild/standard:4.0'
-        EnvironmentVariables:
-          - Name: ENV_NAME
-            Value: dev
-
-  CodeBuildProjectDeployQA:
-    Type: 'AWS::CodeBuild::Project'
-    Properties:
-      Name: !Sub '${AWS::StackName}-deploy-QA'
-      ServiceRole: !GetAtt CodeBuildServiceRole.Arn
-      Source:
-        Type: CODEPIPELINE
-        BuildSpec: deployspec.yaml
-      Artifacts:
-        Type: CODEPIPELINE
-      Environment:
-        Type: LINUX_CONTAINER
-        ComputeType: BUILD_GENERAL1_SMALL
-        Image: 'aws/codebuild/standard:4.0'
-        EnvironmentVariables:
-          - Name: ENV_NAME
-            Value: qa
-  
-  CodeBuildProjectDeployPROD:
-      Type: 'AWS::CodeBuild::Project'
-      Properties:
-        Name: !Sub '${AWS::StackName}-deploy-PROD'
-        ServiceRole: !GetAtt CodeBuildServiceRole.Arn
-        Source:
-          Type: CODEPIPELINE
-          BuildSpec: deployspec.yaml
-        Artifacts:
-          Type: CODEPIPELINE
-        Environment:
-          Type: LINUX_CONTAINER
-          ComputeType: BUILD_GENERAL1_SMALL
-          Image: 'aws/codebuild/standard:4.0'
-          EnvironmentVariables:
-            - Name: ENV_NAME
-              Value: prod
 
   CodePipelineServiceRole:
     Type: 'AWS::IAM::Role'
@@ -262,45 +208,3 @@ Resources:
                 - Name: BuildOutput
               InputArtifacts:
                 - Name: SourceCode
-
-        - Name: Dev
-          Actions:
-            - Name: Deploy
-              ActionTypeId:
-                Category: Build
-                Owner: AWS
-                Provider: CodeBuild
-                Version: '1'
-              Configuration:
-                ProjectName: !Ref CodeBuildProjectDeployDev
-              InputArtifacts:
-                - Name: BuildOutput
-
-        - Name: QA
-          Actions:
-            - Name: Deploy
-              ActionTypeId:
-                Category: Build
-                Owner: AWS
-                Provider: CodeBuild
-                Version: '1'
-              Configuration:
-                ProjectName: !Ref CodeBuildProjectDeployQA
-              InputArtifacts:
-                - Name: BuildOutput
-
-        - Name: PROD
-          Actions:
-            - Name: Deploy
-              ActionTypeId:
-                Category: Build
-                Owner: AWS
-                Provider: CodeBuild
-                Version: '1'
-              Configuration:
-                ProjectName: !Ref CodeBuildProjectDeployPROD
-              InputArtifacts:
-                - Name: BuildOutput
-
-      
-        
